@@ -99,7 +99,7 @@ Its job is to parse a symbolic **language** (assembly language) used to represen
 {:.highlight-title}
 > `beta.uasm` and `bsim`
 > 
->`bsim` is the simulator for our toy Beta CPU, and the simulator part only **understands** machine language in terms of 1s and 0s (the 32-bit instructions loaded at each CLK cycle). `bsim` also incorporates an assembler, which is a proram that converts text files into binary memory. It utilises `beta.uasm` which contains all symbol definitions for all the registers and macro definitions for Beta instructions. 
+>`bsim` is the simulator for our toy Beta CPU, and the simulator part only **understands** machine language in terms of 1s and 0s (the 32-bit instructions loaded at each CLK cycle). `bsim` also incorporates an assembler, which is a  program that converts text files into binary memory. It utilises `beta.uasm` which contains all symbol definitions for all the registers and macro definitions for Beta instructions. 
 > 
 > If you haven't done so, you can [download both from here](https://github.com/natalieagus/bsim-kit). 
 
