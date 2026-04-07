@@ -82,3 +82,4 @@ The amount of practice problems in this set is smaller than usual because the to
 
 There are 20 bytes in the data above. We need at least: $$\lceil\log_2(20)\rceil$$This results to at least <strong>5 bits for addressing.</strong>
 </p></div>
+
