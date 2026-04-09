@@ -2548,3 +2548,4 @@ assign z = (a == b) && en;   // comparisons then logic
 Verilog has **precedence** rules, but users routinely misread mixed expressions. In this course, treat parentheses as the default when you mix operator types. It prevents subtle bugs and makes your wiring intent obvious.
 
 
+

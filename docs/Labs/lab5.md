@@ -1162,6 +1162,68 @@ Ensure your automated tester works as intended on hardware too:
 
 <img src="{{ site.baseurl }}/docs/Labs/images/IMG_1534.gif"  class="center_seventy no-invert"/>
 
+## Operator Precedence
+
+HDLs like Verilog has a long precedence table covering unary, arithmetic, shift, relational, equality, bitwise, reduction, logical, and conditional operators. Since Lucid is transpiled to Verilog, you might need to be *aware* of this. You do <span class="orange-bold">not</span> need to memorize it, but you do need a habit that **protects** you from the cases where the default grouping is not what your eyes tell you it should be.
+
+#### Reduction versus bitwise
+
+```verilog
+// Intent: "all low 3 bits of wr_ptr are 1, AND the edge pulse is high"
+sig bad  =  &wr_ptr[2:0]  &  edge_pulse;   // parses as &(wr_ptr[2:0] & edge_pulse)
+sig good = (&wr_ptr[2:0]) && edge_pulse;   // parses as intended
+```
+
+The unary reduction `&` has <span class="orange-bold">lower</span> precedence than the binary bitwise `&`, so the `bad` line does the bitwise AND first and the reduction *second*. The 1-bit `edge_pulse` is zero-extended against the 3-bit slice, the bitwise AND collapses two of the three bits to zero, and the outer reduction can never be true. The signal **never** asserts and nothing in the syntax warns you.
+
+#### Bitwise versus equality
+
+```verilog
+sig bad  = a & b == 4'd0;     // parses as a & (b == 4'd0)
+sig good = (a & b) == 1'b0;   // probably what you meant
+```
+
+Equality has <span class="orange-bold">higher</span> precedence that bitwise AND, so the `bad` line compares `b` to zero first and then ANDs that 1-bit result with `a`. If you wanted "the AND of `a` and `b` equals zero", the parser disagrees with you.
+
+#### Shift versus addition
+
+```verilog
+sig [7:0] bad  = x + y << 1;     // parses as (x + y) << 1
+sig [7:0] good = x + (y << 1);   // y doubled, then added to x
+```
+
+Addition has <span class="orange-bold">higher</span> precedence than shift, so `x + y << 1` adds first and shifts the sum. People who think of shifts as "just multiplication" expect them to follow the precedence of `*`, but they do not.
+
+#### Conditional versus arithmetic
+
+```verilog
+sig [7:0] bad  = sel ? a : b + c;     // parses as sel ? a : (b + c)
+sig [7:0] good = (sel ? a : b) + c;   // pick a or b, then add c
+```
+
+The conditional operator `?:` has very <span class="orange-bold">low</span> precedence, lower than almost everything else. The `+ c` on the right gets absorbed into the false branch instead of being applied to the result of the select.
+
+#### Logical AND versus logical OR
+
+```verilog
+sig bad  =  |status && ready || enable;
+sig good = ((|status) && ready) || enable;
+```
+
+This one technically parses the way most people want, because `&&` binds tighter than `||`. But a reader cannot see that without consulting the proper documentation. Therefore, the parenthesized version takes one extra second to type and removes any doubt.
+
+#### A case that is actually fine
+
+```verilog
+sig y[15:0] = -a * b;   // parses as (-a) * b
+```
+
+Unary operators has <span class="orange-bold">higher</span> precedence than binary ones, so this does what you expect. Not every mixed expression is a trap. The point of the rule below is not that Verilog precedence is always wrong, it is that you should not have to stop and check.
+
+
+{:.note}
+Whenever you mix operators of different kinds in one expression (reduction with bitwise, bitwise with logical, comparison with arithmetic, shift with anything, or a conditional with anything else) <span class="orange-bold">wrap</span> each sub-expression in parentheses. If an expression is short enough that the precedence is <span class="orange-bold">obvious</span>, like a single comparison or a single arithmetic operation, parentheses are optional. Once two different operator families appear in the same line, treat **parentheses** as **mandatory**. The cost of an extra pair of parentheses is one keystroke. The cost of finding a misparsed condition in a waveform is an hour of staring at signals that look right but are not.
+
 ## Summary 
 
 
