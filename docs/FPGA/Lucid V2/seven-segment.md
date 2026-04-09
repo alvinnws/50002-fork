@@ -3,9 +3,8 @@ layout: default
 permalink: /fpga/fpga_3_2024
 title: Seven Segment 
 description: Tips on how to use the seven segment
-parent: Lucid V2
-grand_parent: 1D&2D Project (FPGA)
-nav_order:  3
+parent: 1D&2D Project (FPGA) 
+nav_order:  33
 ---
 
 

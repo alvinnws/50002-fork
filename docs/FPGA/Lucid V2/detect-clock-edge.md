@@ -3,9 +3,8 @@ layout: default
 permalink: /fpga/detect-clock-edge
 title: Can We Detect Clock Edge?
 description: Pitfall in using edge detector with clock as input
-parent: Lucid V2
-grand_parent: 1D&2D Project (FPGA)
-nav_order: 10
+parent: 1D&2D Project (FPGA) 
+nav_order: 20
 ---
 
 * TOC

@@ -3,9 +3,8 @@ layout: default
 permalink: /fpga/hub75
 title: RGB LED Matrix (HUB 75) 
 description: Tips on how to use instructor's drivers 
-parent: Lucid V2
-grand_parent: 1D&2D Project (FPGA)
-nav_order:  7
+parent: 1D&2D Project (FPGA) 
+nav_order:  32
 ---
 
 

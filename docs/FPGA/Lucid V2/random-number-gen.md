@@ -3,9 +3,8 @@ layout: default
 permalink: /fpga/fpga_2_2024
 title: Random Number Generation
 description: Tips on how to generate random number
-parent: Lucid V2
-grand_parent: 1D&2D Project (FPGA)
-nav_order: 2
+parent: 1D&2D Project (FPGA) 
+nav_order: 22
 ---
 
 

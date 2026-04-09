@@ -3,9 +3,8 @@ layout: default
 permalink: /fpga/vga-textmode
 title: VGA Text Mode
 description: Tips on how to use the VGA 20×15 text-mode driver
-parent: Lucid V2
-grand_parent: 1D&2D Project (FPGA)
-nav_order: 9
+parent: 1D&2D Project (FPGA) 
+nav_order: 35
 ---
 
 * TOC

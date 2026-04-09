@@ -3,9 +3,7 @@ layout: default
 permalink: /fpga/programmable_machine
 title: Designing a Programmable Datapath 
 description: This document shows an example on how you can create a programmable data path for a simple game idea that might be useful for your 1D project. 
-parent: Lucid V1 
-grand_parent: 1D&2D Project (FPGA)
-nav_order:  5
+nav_exclude: true
 ---
 * TOC
 {:toc}

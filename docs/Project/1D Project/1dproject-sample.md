@@ -101,28 +101,47 @@ We will simplify by connecting all **matching** segment pins together since they
 {:.highlight}
 Total: **24** output connections from the Br board (16 for all 7-segments, 8 for LEDs).
 
-#### Separate power supply
+#### Separate power supply with PNP + NPN BJT pulldown
 The common anodes of the smaller 7-segment displays should connect to the Br Board GPIO pins (which will source ~3.6V or logic `1`). However, the common anodes of the larger 7-segment displays should connect to 9V or 12V battery supply.
 
-* We use a **PNP BJT transistor** for each common anode pin of the larger 7-segment displays
+We should use a **PNP BJT transistor** for each common anode pin of the larger 7-segment displays
 * Connect the <span class="orange-bold">emitter</span> to an external supply (e.g: 9V/12V battery)
-* Connect the <span class="orange-bold">base</span> with Br board GPIO  + resistor (~3.5kΩ).
-  * When the GPIO drives the PNP transistor base low `0`, the transistor turns **ON**, connecting the 9V/12V supply to the common anode pin of the display.
+* Connect the <span class="orange-bold">base</span> to a power supply via a resistor (~10kΩ), and also to the emitter of an NPN transitor (see below)
 * Connect the <span class="orange-bold">collector</span> to the common anode of large 7-segment displays.
-* 500-600Ω resistors are placed on **each** segment to <span class="orange-bold">limit</span> the current from the common anode through the LEDs to the Br GPIO pins.
+
+We also use an **NPN BJT transistor** to drive the pulldown on the **base** of each PNP:
+* Create a <span class="orange-bold">pulldown</span> NPN arrangement to properly drive the base of the PNP
+* Connect the <span class="orange-bold">emitter</span> to GND
+* Connect the <span class="orange-bold">base</span> to Br board GPIO  + resistor (~2.2kΩ).
+  * When the GPIO drives the NPN transistor base high `1`, the transistor turns **ON**, connecting the 12V to the ground via 2.2k + 10k resistor
+  * This drives the **base** of the PNP low, which will connect 12V to the common anode of the 7-segment display, effectively **selecting it**.
+
+Finally, 500-600Ω resistors are placed on **each** segment to <span class="orange-bold">limit</span> the current from the common anode through the LEDs to the Br GPIO pins.
 
 {:.note-title}
-> Resistor at base of PNP transistor
+> Resistor at base of NPN and PNP transistor
 >
-> The resistor at the base of the PNP transistor is there to limit the current flowing from the emitter (positive voltage supply, e.g., 12V) into the base and through to the GPIO pin (which is set to **low**). Without the resistor, this current could become too large and potentially damage the GPIO pin or the transistor. 
+> The resistor at the base of the NPN and PNP transistor is there to limit the current flowing from the emitter (positive voltage supply, e.g., 12V) into the base and through to the GPIO pin (which is set to **low**). Without the resistor, this current could become too large and potentially damage the GPIO pin or the transistor. 
 > 
 > BJT is not MOSFET. In BJT, current physically flows from the emitter to the base (through the GPIO pin), so a base resistor is essential to limit this current. However in a MOSFET, the gate of a MOSFET is insulated from the drain and source by a thin layer of oxide (hence the name Metal-Oxide-Semiconductor FET)
 
 The diagram below illustrates a simple schematic showing how to connect an external battery to a 7-segment display, driven by GPIO pins:
 
-<img src="{{ site.baseurl }}/docs/FPGA/images/1d-diagram-pnp.drawio.png"  class="center_seventy"/>
+<img src="{{ site.baseurl }}/docs/Project/1D Project/1d-diagram-pnp.drawio.png"  class="center_seventy"/>
 
 *Not drawn: SEG 2 - SEG 8 connection to Br Board. Each requiring a resistor, analogous to SEG 1 sample above.*
+
+{:.important}
+> You need the NPN pulldown circuit instead of supplying 3.3V GPIO directly to the base of the PNP transistor to be able to fully turn the PNP OFF. This is because you need to supply a voltage close to the voltage connected to the emitter of the PNP, which is close to 12V if you use such power source. The GPIO pin is only able to supply up to 3.3V. Therefore it won't be fully OFF if you directly connect the GPIO to the base of the PNP and send logic `1` at 3.3V. 
+>
+> In other words, the 10k pull-up mainly tries to keep the PNP base **near** 12 V so the PNP stays off when the NPN is off. When the NPN turns on, it <span class="orange-bold">overcomes</span> that pull-up and drags the base PNP node down. Once the base PNP node is about 0.7 V below the emitter, the PNP starts turning ON, effectively selecting that segment.
+
+#### What if we use CC 7-segments instead of CA?
+
+Using a **12 V common-cathode 7-segment module** is MORE complex when the controller GPIO is only **3.3 V**. In a common-cathode arrangement, each digit’s **common** (CC) pin can be switched easily with an **NPN transistor** on the low side, since enabling a digit just means connecting its cathode to ground. 
+
+However, each individual segment must then be driven **high** to approximately **12 V** to light up. A 3.3 V GPIO pin <span class="orange-bold">cannot</span> do this directly, so every segment line needs an additional **high-side driver stage**, typically a **PNP transistor** together with an **NPN transistor** arrangement like we see in the selector (common anode pins) above to level-shift the 3.3 V control signal. As a result, the digit-enable side is simple, but the segment-driving side becomes more complicated because each segment requires 12 V sourcing circuitry.
+
 
 ### Input connections
 

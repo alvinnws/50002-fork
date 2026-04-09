@@ -3,9 +3,8 @@ layout: default
 permalink: /fpga/fpga_5_2024
 title: LucidV2 Pitfalls
 description: Common bugs and pitfalls
-parent: Lucid V2
-grand_parent: 1D&2D Project (FPGA)
-nav_order:  5
+parent: 1D&2D Project (FPGA) 
+nav_order:  8
 ---
 
 

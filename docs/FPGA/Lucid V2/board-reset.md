@@ -3,8 +3,7 @@ layout: default
 permalink: /fpga/fpga_1_2024
 title: Board Reset 
 description: Tips on how to reset the system
-parent: Lucid V2
-grand_parent: 1D&2D Project (FPGA)
+parent: 1D&2D Project (FPGA) 
 nav_order:  1
 ---
 

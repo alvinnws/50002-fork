@@ -51,8 +51,8 @@ Answer the following questions:
     The candidate next PC from JMP is <code>Reg[R30] = 0x80001234</code>. In user mode (<code>PC31 = 0</code>), the hardware masks the top bit of any value being written into PC, so the actual write is <code>0x00001234</code>. The link register receives <code>PC + 4 = 0x00400004</code>, with no masking needed since that value already has MSB 0.
     </p></div><br>
 2.  Suppose in alternate ISA, a `JMP` initiated to kernel space that failed caused the  user program continues with the next instruction at the user side. What address does the memory unit see when `LD(R2, 0x10, R3)` executes, and what does `Reg[R3]` receive?
-   <div cursor="pointer" class="collapsible">Show Answer</div><div class="content_answer"><p>
-    The address adder computes <code>Reg[R2] + 0x10 = 0x80000030</code>. The notes specify that <code>LD</code>, <code>LDR</code>, and <code>ST</code> in user mode <strong>ignore the MSB</strong> of the computed address, so the memory unit sees <code>0x00000030</code>. <code>Reg[R3]</code> receives <code>M[0x00000030]</code>, which is in user space.
+    <div cursor="pointer" class="collapsible">Show Answer</div><div class="content_answer"><p>
+        The address adder computes <code>Reg[R2] + 0x10 = 0x80000030</code>. The notes specify that <code>LD</code>, <code>LDR</code>, and <code>ST</code> in user mode <strong>ignore the MSB</strong> of the computed address, so the memory unit sees <code>0x00000030</code>. <code>Reg[R3]</code> receives <code>M[0x00000030]</code>, which is in user space.
     </p></div><br>
 3. The two questions above involve two **different** hardware mechanisms that both <span class="orange-bold">protect</span> the kernel. Name where in the datapath each mechanism lives, and explain in one sentence why a single mechanism cannot cover both cases.
     <div cursor="pointer" class="collapsible">Show Answer</div><div class="content_answer"><p>

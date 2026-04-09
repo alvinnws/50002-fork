@@ -3,9 +3,8 @@ layout: default
 permalink: /fpga/fpga_8_2024
 title: Debugging Strategies 
 description: Tips on how to debug Lucid Projects
-parent: Lucid V2
-grand_parent: 1D&2D Project (FPGA)
-nav_order:  8
+parent: 1D&2D Project (FPGA) 
+nav_order:  7
 ---
 
 

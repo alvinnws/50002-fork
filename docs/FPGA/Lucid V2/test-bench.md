@@ -3,9 +3,8 @@ layout: default
 permalink: /fpga/test_bench
 title: Testbench 
 description: How to use test bench modules
-parent: Lucid V2
-grand_parent: 1D&2D Project (FPGA)
-nav_order: 9
+parent: 1D&2D Project (FPGA) 
+nav_order: 4
 ---
 
 

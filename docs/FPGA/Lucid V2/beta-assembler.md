@@ -3,9 +3,8 @@ layout: default
 permalink: /fpga/beta-assembler
 title: Beta Assembler
 description: Python assembler and simulator for the 32-bit Beta CPU
-parent: Lucid V2
-grand_parent: 1D&2D Project (FPGA)
-nav_order: 9
+parent: 1D&2D Project (FPGA) 
+nav_order: 6
 ---
 
 * TOC

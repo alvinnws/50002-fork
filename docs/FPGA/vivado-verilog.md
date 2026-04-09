@@ -4,7 +4,7 @@ permalink: /fpga/fpga_vivado_verilog
 title: Using Vivado + Verilog with Alchitry Au 
 description: This document gives a brief overview of how you can use Vivado to generate bitstream for Alchitry AU FPGAs 
 parent: 1D&2D Project (FPGA) 
-nav_order:  3
+nav_order:  2
 ---
 * TOC
 {:toc}

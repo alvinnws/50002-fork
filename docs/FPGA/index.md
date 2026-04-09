@@ -66,11 +66,6 @@ You can refer to these repositories for demos of following drivers in LucidV2 & 
 4. [MAX7219](https://github.com/natalieagus/max7219-v2), [guide]({{ site.baseurl }}/fpga/max7219)
 4. [VGA](https://github.com/natalieagus/vga-textmode-20x15-v2.git), [guide]({{ site.baseurl }}/fpga/vga-textmode)
 
-These are the same drivers but implemented in LucidV1. 
-1. [WS2812B](https://github.com/natalieagus/ws2812b)
-2. [HUB75 RGB LED Matrix](https://github.com/natalieagus/rgbledmatrix)
-3. [75HC595 Shift Register](https://github.com/natalieagus/74hc595)
-4. [MAX7219](https://github.com/natalieagus/max7219) 
 
 If you're looking for 1D project sample for 50.002 in LucidV2, checkout [this repository](https://github.com/natalieagus/sample-1d-project-alchitry-v2).
 

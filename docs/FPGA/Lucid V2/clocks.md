@@ -3,9 +3,8 @@ layout: default
 permalink: /fpga/clocks
 title: Modifying Clock
 description: How to use modify the clock
-parent: Lucid V2
-grand_parent: 1D&2D Project (FPGA)
-nav_order: 10
+parent: 1D&2D Project (FPGA) 
+nav_order: 5
 ---
 
 

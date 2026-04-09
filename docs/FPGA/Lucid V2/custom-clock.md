@@ -3,9 +3,8 @@ layout: default
 permalink: /fpga/custom-clock-pitfall
 title: Custom Clock Pitfall 
 description: How to set proper clock
-parent: Lucid V2
-grand_parent: 1D&2D Project (FPGA)
-nav_order: 11
+parent: 1D&2D Project (FPGA) 
+nav_order: 24
 ---
 
 
