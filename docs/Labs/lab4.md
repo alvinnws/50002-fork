@@ -1096,6 +1096,10 @@ Once your tester works in the simulator, you should **build** the project and **
 - How to **build** your project
 - How to **flash them** to your FPGA
 
+Once Vivado location is set, click the hammmer button to begin building:
+
+<img src="{{ site.baseurl }}//docs/FPGA/images/installation/2026-04-09-18-30-50.png"  class="center_seventy no-invert"/>
+
 You should be able to demo using the hardware exactly what you see in the simulator:  
 
 <img src="{{ site.baseurl }}/docs/Labs/images/IMG_1395.gif"  class="center_seventy no-invert"/>

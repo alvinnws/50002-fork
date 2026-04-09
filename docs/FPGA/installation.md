@@ -186,6 +186,9 @@ Ensure you select Alchitry Au as the board, and not Alchitry Au V2!
 
 <img src="{{ site.baseurl }}/docs/FPGA/Lucid V2/images/Screenshot 2025-02-04 at 11.50.59 AM.png"  class="center_seventy"/>
 
+Then click the build (hammer) button:
+
+<img src="{{ site.baseurl }}//docs/FPGA/images/installation/2026-04-09-18-30-50.png"  class="center_seventy no-invert"/>
 
 If Vivado location is set properly, you should see the message `Starting Vivado...`:
 

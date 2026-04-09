@@ -95,7 +95,6 @@ The VM also comes with **legacy** Alchitry Labs 1.2.7 (using Lucid V1). You can 
 Update the IDE to the latest version (whenever you download the VM). See [this](#updating-alchitry-labs-in-the-vm) section.
 
 
-
 ## Loading .bin from your mac to Alchitry Au FPGA
 
 
