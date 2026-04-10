@@ -59,7 +59,7 @@ The setup line says "give the path 10 fast clock cycles to settle instead of 1."
  
 For this, **Vivado automatically moves the hold check to follow the NEW setup edge** at t = 100ns. The default hold capture edge is  "one destination clock cycle before the setup capture edge"  because that is the previous edge the tool is trying to protect. Since the destination clock cycle is 100MHz (10ns period), the new hold capture edge is computed at `100 ns - 10 ns = 90ns`. At this point, Vivado does a **hold check**.
  
-{.note-title}
+{:.note-title}
 > Hold Check
 > 
 > When new data is launched, it must <span class="orange-bold">not</span> arrive at the destination FF so fast that it overwrites whatever the **previous capture edge** was supposed to sample. We begin by figuring out the hold capture edge, and adding tHold + clock skew into it to compute a hold check. 
