@@ -20,7 +20,13 @@ Singapore University of Technology and Design
 
 When a design has two clock domains running at different frequencies, and a signal crosses from the slow domain into the fast domain, Vivado (and other STA tools) will by default try to close timing using the <span class="orange-bold">tightest</span> possible pair of launch and capture edges it can find between the two clocks.
 
-For example, suppose a **slow** clock at 10 MHz (100 ns period) drives a register that feeds combinational logic into a second register clocked by a **fast** clock at 100 MHz (10 ns period). The static timing analyser enumerates all the edge pairings between the two clocks and picks the worst case. That worst case is usually only a few nanoseconds, far less than either clock period, because at some point a slow clock rising edge will land just before a fast clock rising edge.
+For example, suppose a **slow** clock at 10 MHz (100 ns period) drives a register that feeds combinational logic into a second register clocked by a **fast** clock at 100 MHz (10 ns period). 
+
+<img src="{{ site.baseurl }}/docs/FPGA/Lucid V2/images/cs-2026-50002-setupdff-cross-domain.drawio.png"  class="center_seventy"/>
+
+The static timing analyser enumerates all the edge pairings between the two clocks and picks the worst case, see region A and B below. That worst case is usually only a few nanoseconds, possibly far less than either clock period (region B), because at some point a slow clock rising edge will land just before a fast clock rising edge.
+
+<img src="{{ site.baseurl }}/docs/FPGA/Lucid V2/images/cs-2026-50002-different-clock-thold-tsetup.drawio.png"  class="center_full"/>
 
 {:.note}
 The tool then demands that the entire combinational datapath between the two registers settle within those few nanoseconds. If the path has any real logic in it, timing fails, even though physically the signal is stable for the full 100 ns slow clock period and has **no** trouble settling.
@@ -58,23 +64,30 @@ For this, **Vivado automatically moves the hold check to follow the NEW setup ed
 > 
 > When new data is launched, it must <span class="orange-bold">not</span> arrive at the destination FF so fast that it overwrites whatever the **previous capture edge** was supposed to sample. We begin by figuring out the hold capture edge, and adding tHold + clock skew into it to compute a hold check. 
  
-In the single cycle case (launch at t = 0, setup capture at t = 10), the hold capture edge is at t = 0 (10 - 10 = 0). At t = 0, the destination FF is sampling the *old* value from the previous launch, say A, while the source FF is sampling a new value, say B. The hold check rule says the B must <span class="orange-bold">not</span> reach the FF *before* `t = 0 + thold FF Destination + clock skew`, because this destination FF is trying to sample A. In otherwords, `min datapath delay > 0 + thold FF + clock skew` and this is **trivially** satisfied since this value should be small and can be easily satisfiable with tcd. This is why hold looks like a non-issue in normal single cycle timing. From our lecture materials, we know that any real path from one FF to another through even a trivial amount of logic can *automatically* satisfies hold in the single cycle same clock case.
+In the single cycle case (launch at t = 0, setup capture at t = 10), the hold capture edge is at t = 0 (10 - 10 = 0). At t = 0, the destination FF is sampling the *old* value from the previous launch, say A, while the source FF is sampling a new value, say B. See figure below.
+
+<img src="{{ site.baseurl }}/docs/FPGA/Lucid V2/images/cs-2026-50002-100-10-clk.drawio-3.png"  class="center_full"/>
+ 
+The hold check rule says the B must <span class="orange-bold">NOT</span> reach the FF *before* `t = 0 + thold FF Destination + clock skew`, because this destination FF is trying to sample A. In other words, B should take **MORE THAN** `min datapath delay > hold capture edge + thold FF + clock skew` to reach destination FF. If hold capture edge is very small or `0` then this is trivially satisfied through the CL's tcd.
+
+From our lecture materials, we know that any real path from one FF to another through even a trivial amount of logic can *automatically* satisfies hold in the single cycle same clock case.
 
 In the multicycle case with `-setup 10`:
 - New setup capture edge: t = 100 ns.
 - New hold capture edge: t = 100 - 10 (period of destination FF clock) = **90 ns**. 
 
+ 
+So the tool places the hold check at t = 90 and says: *"at t = 90 ns I am going to clock this FF and I expect it to capture some previous value A, NOT our new value B launched at t = 0. Therefore B must not reach the FF before t = 90."*. In other words, min datapath delay must be at least 90 ns. *This is impossible to fulfil*.
+
+{:.highlight}
+Real min datapath delay through a few complex LUTs and some routing is maybe 2 to 40+ ns. The tool reports a hold violation of roughly 60-80+ ns which is not fixable.
+ 
+Therefore violation is <span class="orange-bold">catastrophic</span> and nothing the router can do will fix it, because <span class="orange-bold">no one</span> puts 90 ns of min delay on a real combinational path. The `-hold 0` setting means "shift the hold check by zero cycles from its default position," but the default position is already the <span class="orange-bold">broken</span> one at `t = 90 ns`. So `-hold 0` is a no-op and the violation stays exactly where it was.
+
 {:.note-title}
 > Key point
 > 
 > **The destination FF still has a rising clock edge every 10 ns.** Edges at t = 10, 20, 30, ..., 90, 100, ... are all real clock events on the FF. The STA tool, by default, treats every one of those edges as a real capture that must sample the **correct** value. It has no notion of "this edge is a don't care because my downstream logic ignores it." You know those intermediate edges do not matter but the tool does not.
- 
-So the tool places the hold check at t = 90 and says: *"at t = 90 ns I am going to clock this FF and I expect it to capture some previous value A, NOT our new value B launched at t = 0. Therefore B must not reach the FF before t = 90."*. In other words, min datapath delay must be at least 90 ns. *This is impossible to fulfil*.
-
-Real min datapath delay through a few complex LUTs and some routing is maybe 2 to 40+ ns. The tool reports a hold violation of roughly 60-80+ ns.
- 
-Therefore violation is <span class="orange-bold">catastrophic</span> and nothing the router can do will fix it, because <span class="orange-bold">no one</span> puts 90 ns of min delay on a real combinational path. The `-hold 0` setting means "shift the hold check by zero cycles from its default position," but the default position is already the <span class="orange-bold">broken</span> one at `t = 90 ns`. So `-hold 0` is a no-op and the violation stays exactly where it was.
-
 
 #### `-hold 9` does not work either
  
@@ -101,9 +114,9 @@ The `<VALUE>` should be a little less than the slow clock period, to leave margi
 `-datapath_only` does **two** things at once:
  
 1. It caps the datapath delay at the value you specify. This is the real physical constraint: the signal just needs to propagate through the logic *before* the next slow clock edge launches a new value.
-2. It tells Vivado to **ignore clock skew and clock edge relationships** on this path, which **effectively** disables the hold check for it. The tool treats the transfer as quasi static and trusts that the source register will <span class="orange-bold">not</span> change before the destination has sampled it.
+2. It tells Vivado to **ignore clock skew and clock edge relationships** on this path, which **effectively** disables the hold check for it. The tool treats the transfer as quasi static and <span class="orange-bold">trusts</span> that the source register will <span class="orange-bold">not</span> change before the destination has sampled it.
  
-That second point is the key difference from `set_multicycle_path`. Multicycle keeps the hold check alive and tries to re-anchor it, which is where things go wrong for cross frequency paths. `-datapath_only` removes the hold check from the picture and only enforces the max delay you asked for.
+That second point is the key difference from `set_multicycle_path`. Multicycle keeps the hold check *alive* and tries to re-anchor it, which is where things go wrong for cross frequency paths. `-datapath_only` removes the hold check from the picture and only enforces the max delay you asked for.
  
 
 Tell the tool that the path is a multicycle path, meaning the destination register is allowed to <span class="orange-bold">wait</span> N fast clock cycles **before** capturing, instead of just one.
