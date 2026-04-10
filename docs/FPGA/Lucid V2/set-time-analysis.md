@@ -132,20 +132,6 @@ The **setup** constraint moves the capture edge N cycles later, giving the datap
 
 ### Example 
 
-Here's one example with proper values in one of our projects with shared BRAM between CPU and GPU. 
-
-```tcl
-# timing.xdc
-# CPU outputs to BRAM: stable for full 6.25 MHz period
-set_max_delay -datapath_only 150.0 -from [get_clocks mhz_6_25_clk_wiz_0_1] -to [get_clocks mhz_50_clk_wiz_0_1]
-# Cache to regfile: stable for full 6.25 MHz period  
-set_max_delay -datapath_only 150.0 -from [get_clocks mhz_25_n_clk_wiz_0_1] -to [get_clocks mhz_6_25_clk_wiz_0_1]
-# cpu_cache -> CPU decode -> ALU -> BRAM address
-set_max_delay -datapath_only 150.0 -from [get_clocks mhz_25_n_clk_wiz_0_1] -to [get_clocks mhz_50_clk_wiz_0_1]
-```
-
-#### Context
-
 In our setup we have BRAM inference on both memory modules (instruction and data):
 
 In `simple_ram.v` (instruction):
@@ -181,6 +167,20 @@ mrd = cpu_data_cache;
 Without the relaxed cross-clock paths, we are unable to pass timing, in particular, the path from 6.25MHz clock edge to the next 50MHz clock edge. Assuming that rising 6.25MHz happens at `t`, `t+160`, then rising edges of 50MHz happens at `t`, `t+20`, `t+40`, `t+60`, etc.
 
 At `t+20`, the CPU is still computing `EA` for the memory. We need to wait *several* posedge 50MHz after `t` (at least 40 ns after). We can allow the RAM to capture a "wrong" value at `t+20`. This is not an issue as the CPU regs only capture RAM's output at the following 6.25MHz, 160 ns later after `t`. 
+
+#### Solution
+
+We set max delay between the various source clock and destination clock to be 150ns, just slightly under 160 ns (period of 6.25 MHz slowest clock):
+
+```tcl
+# timing.xdc
+# CPU outputs to BRAM: stable for full 6.25 MHz period
+set_max_delay -datapath_only 150.0 -from [get_clocks mhz_6_25_clk_wiz_0_1] -to [get_clocks mhz_50_clk_wiz_0_1]
+# Cache to regfile: stable for full 6.25 MHz period  
+set_max_delay -datapath_only 150.0 -from [get_clocks mhz_25_n_clk_wiz_0_1] -to [get_clocks mhz_6_25_clk_wiz_0_1]
+# cpu_cache -> CPU decode -> ALU -> BRAM address
+set_max_delay -datapath_only 150.0 -from [get_clocks mhz_25_n_clk_wiz_0_1] -to [get_clocks mhz_50_clk_wiz_0_1]
+```
 
 
 ### Application Notes
