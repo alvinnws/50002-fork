@@ -64,7 +64,7 @@ For this, **Vivado automatically moves the hold check to follow the NEW setup ed
 > 
 > When new data is launched, it must <span class="orange-bold">not</span> arrive at the destination FF so fast that it overwrites whatever the **previous capture edge** was supposed to sample. We begin by figuring out the hold capture edge, and adding tHold + clock skew into it to compute a hold check. 
  
-In the single cycle case (launch at t = 0, setup capture at t = 10), the hold capture edge is at t = 0 (10 - 10 = 0). At t = 0, the destination FF is sampling the *old* value from the previous launch, say A, while the source FF is sampling a new value, say B. See figure below.
+In the single cycle case (launch at t = 0, setup capture at t = 10), the hold capture edge is at t = 10 - 10 = 0. At t = 0, the destination FF is sampling the *old* value from the previous launch, say A, while the source FF is sampling a new value, say B. See figure below.
 
 <img src="{{ site.baseurl }}/docs/FPGA/Lucid V2/images/cs-2026-50002-100-10-clk.drawio-3.png"  class="center_full"/>
  
