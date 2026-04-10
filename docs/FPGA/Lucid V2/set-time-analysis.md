@@ -53,7 +53,7 @@ The setup line says "give the path 10 fast clock cycles to settle instead of 1."
  
 #### `-setup 10`
  
-`-setup 10` moves the setup capture edge 10 fast clock cycles later, from t = 10 ns to t = 100 ns. Data launched at t = 0 now has 100 ns to arrive. This makes setup passes easily.
+`-setup 10` moves the setup capture edge 10 fast clock cycles later, from t = 10 ns to t = 100 ns. Data launched at t = 0 now has 100 ns to arrive. Our maximum datapath delay is 100ns.  This makes setup passes easily. 
  
 #### `-hold 0`
  
@@ -110,6 +110,8 @@ set_max_delay -datapath_only <VALUE> -from [get_clocks slow_clk] -to [get_clocks
 ```
  
 The `<VALUE>` should be a little less than the slow clock period, to leave margin. In this example, we can use `90.0` (90 ns).
+
+This is a different approach from the above. `set_max_delay -datapath_only` bounds raw propagation delay (`Tcq + Tlogic + Trouting <= N ns`) with <span class="orange-bold">no capture edge</span> and no Tsetup in the check. `set_multicycle_path -setup N` keeps the normal edge-based setup check (Tcq + logic + routing + Tsetup + uncertainty included) but moves the capture edge out to N destination cycles later instead of the default 1. We have illustrations in the next section.
  
 `-datapath_only` does **two** things at once:
  
@@ -146,7 +148,9 @@ In `simple_dual_port_ram.v` (data):
 
 The purpose of this is to avoid them being built as LUT ROM with massive logic levels.
 
-We set the Memory clock to 25MHz, CPU clock to 6.25 MHz, and GPU clock to 25MHz using MMCM. Both of its PC and regfile capture on the same rising edge of 6.25 MHz. The CPU is much more complex than the GPU and must run on slower clock. The full 160ns period gives plenty of room for any required combinational length in the CPU. Both of them are sharing the data RAM, <span class="orange-bold">time-multiplexed</span>. The BRAM receives read data address from CPU on posedge 25MHz clock, and address from GPU on negative 25MHz clock.
+We set the Memory clock to 50MHz (90 degree phase offset), CPU clock to 6.25 MHz, and GPU clock to 25MHz using MMCM. Both of its PC and regfile capture on the same rising edge of 6.25 MHz. The CPU is much more complex than the GPU and must run on slower clock. The full 160ns period gives plenty of room for any required combinational length in the CPU. Both of them are sharing the data RAM, <span class="orange-bold">time-multiplexed</span>. The BRAM receives read data address from CPU on posedge 25MHz clock, and address from GPU on negative 25MHz clock.
+
+<img src="{{ site.baseurl }}/docs/FPGA/Lucid V2/images/cs-2026-50002-shared-gpu-cpu.drawio.png"  class="center_seventy"/>
 
 Therefore, shared memory needs a cache to both GPU and CPU:
 ```verilog
@@ -164,9 +168,9 @@ mrd = cpu_data_cache;
 
 #### Initial Issue
 
-Without the relaxed cross-clock paths, we are unable to pass timing, in particular, the path from 6.25MHz clock edge to the next 50MHz clock edge. Assuming that rising 6.25MHz happens at `t`, `t+160`, then rising edges of 50MHz happens at `t`, `t+20`, `t+40`, `t+60`, etc.
+Without the relaxed cross-clock paths, we are unable to pass timing, in particular, the path from 6.25MHz clock edge to the next 50MHz clock edge. Assuming that rising 6.25MHz happens at `t`, `t+160`, then rising edges of 50MHz happens at `t+10`, `t+30`, `t+50`, `t+70`, etc.
 
-At `t+20`, the CPU is still computing `EA` for the memory. We need to wait *several* posedge 50MHz after `t` (at least 40 ns after). We can allow the RAM to capture a "wrong" value at `t+20`. This is not an issue as the CPU regs only capture RAM's output at the following 6.25MHz, 160 ns later after `t`. 
+At `t+10`, the CPU is still computing `EA` for the memory. We need to wait *several* posedge 50MHz after `t` (at least 40 ns after). We can allow the RAM to capture a "wrong" value at `t+10`. This is not an issue as the CPU regs only capture RAM's output at the following 6.25MHz, 160 ns later after `t`. 
 
 #### Solution
 
@@ -174,14 +178,22 @@ We set max delay between the various source clock and destination clock to be 15
 
 ```tcl
 # timing.xdc
-# CPU outputs to BRAM: stable for full 6.25 MHz period
-set_max_delay -datapath_only 150.0 -from [get_clocks mhz_6_25_clk_wiz_0_1] -to [get_clocks mhz_50_clk_wiz_0_1]
-# Cache to regfile: stable for full 6.25 MHz period  
-set_max_delay -datapath_only 150.0 -from [get_clocks mhz_25_n_clk_wiz_0_1] -to [get_clocks mhz_6_25_clk_wiz_0_1]
-# cpu_cache -> CPU decode -> ALU -> BRAM address
-set_max_delay -datapath_only 150.0 -from [get_clocks mhz_25_n_clk_wiz_0_1] -to [get_clocks mhz_50_clk_wiz_0_1]
+# Constraint 1: CPU output to BRAM address
+set_max_delay -datapath_only 110.0 -from [get_clocks mhz_6_25_clk_wiz_0_1] -to [get_clocks mhz_50_clk_wiz_0_1]
+# Constraint 2: CPU cache to CPU Regs
+set_max_delay -datapath_only 90.0 -from [get_clocks mhz_25_n_clk_wiz_0_1] -to [get_clocks mhz_6_25_clk_wiz_0_1]
+# Constraint 3: CPU cache to BRAM address
+set_max_delay -datapath_only 70.0 -from [get_clocks mhz_25_n_clk_wiz_0_1] -to [get_clocks mhz_50_clk_wiz_0_1]
 ```
 
+The following timing diagram shows the reasoning behind the values 110 ns and 70 ns.
+
+<img src="{{ site.baseurl }}/docs/FPGA/Lucid V2/images/cs-2026-50002-shared-ram-clock.drawio.png"  class="center_seventy"/>
+
+Paths behind each constraint:
+1. **Constraint 1**: This shows the maximum allowable delay for the CPU regs to produce a valid RAM read address. It is measured from the moment CPU received valid instruction data (id) to the last posedge 50MHz clock when 25MHz is HIGH (CPU slot) within 6.25MHz period.
+2. **Constraint 2**: CPU cache is clocked on negedge 50MHz in our setup. We measure the maximum datapath delay for this constraint from the moment the RAM is able to produce some data as per the current id, up until just slightly before the rising edge of 6.25MHz clk (CPU Regs capture time). 
+3. **Constraint 3**: This path is *unused* in our design, because we would never need to load something out from the RAM and use it back as an input address to the RAM. However, Vivado would still consider this path, so we include it in our timing constraints.
 
 ### Application Notes
 
