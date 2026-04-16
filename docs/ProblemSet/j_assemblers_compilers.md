@@ -116,7 +116,7 @@ Hand-assemble certain instructions by providing the higher and lower 16-bit of t
     </p></div><br>
 3. `LD(R31, answer_key, R2)`
     <div cursor="pointer" class="collapsible">Show Answer</div><div class="content_answer"><p>
-    Higher 16-bit: `0x605F`, Lower 16-bit: `0x0020`.
+    Higher 16-bit: `0x605F`, Lower 16-bit: `0x0200`.
     </p></div><br>
 
 
