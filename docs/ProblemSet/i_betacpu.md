@@ -246,9 +246,9 @@ PUSH(Rc, 4, Ra):
 	Reg[Ra] <-- Reg[Ra] + 4
 ```
 
-<div cursor="pointer" class="collapsible">Show Answer</div><div class="content_answer"><p>
-To implement this <code>PUSH</code>, somehow the <code>ALU</code> would have to produce <i>two</i> 32-bit values instead of the original one 32-bit output. The new two 32-bit values are: <code>Reg[Ra]</code> to be used as the memory address and <code>Reg[Ra]+4</code> to be written into the register file.
-</p></div><br>
+	<div cursor="pointer" class="collapsible">Show Answer</div><div class="content_answer"><p>
+	To implement this <code>PUSH</code>, somehow the <code>ALU</code> would have to produce <i>two</i> 32-bit values instead of the original one 32-bit output. The new two 32-bit values are: <code>Reg[Ra]</code> to be used as the memory address and <code>Reg[Ra]+4</code> to be written into the register file.
+	</p></div><br>
 
 
 ## Another New Beta Instruction (Basic)
