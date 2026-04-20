@@ -478,7 +478,7 @@ Cache content after this access:  **`0x0022`**, `0x0043`, `0x0012`, `0x0014`.
 Cache content after this access:  **`0x0043`**, `0x0012`, `0x0014`, `0x00AB`. 
 
 `At t=8: 0x0033` $$\rightarrow$$ `MISS`  (and cached by replacing oldest entry:`0x0043`)
-Cache content after this access::  **`0x0012`**, `0x0014`, `0x00AB`, `0x0033`. 
+Cache content after this access:  **`0x0012`**, `0x0014`, `0x00AB`, `0x0033`. 
 
 
 Now during the **second round**, `t=9` to `t=17`, we have the same 9 input sequences. Let's observe the result:
@@ -486,7 +486,7 @@ Now during the **second round**, `t=9` to `t=17`, we have the same 9 input seque
 `At t=9: 0x0014` $$\rightarrow$$ `HIT` 
 
 `At t=10: 0x0011` $$\rightarrow$$ `MISS`  (and cached by replacing oldest entry:`0x0012`)
-Cache content after this access::  **`0x0014`**, `0x00AB`, `0x0033`, `0x0011`. 
+Cache content after this access:  **`0x0014`**, `0x00AB`, `0x0033`, `0x0011`. 
 
 `At t=11: 0x0022` $$\rightarrow$$ `MISS`  (and cached by replacing oldest entry:`0x0014`)
 Cache content after this access:  **`0x00AB`**, `0x0033`, `0x0011`, `0x0022`. 
@@ -526,7 +526,7 @@ Cache content after this access:  **`0x0033`**, `0x0014`, `0x0011`, `0x0022`.
 Cache content after this access:  **`0x0014`**, `0x0011`, `0x0022`, `0x0043`. 
 
 `At t=23: 0x0012` $$\rightarrow$$ `MISS`  (and cached by replacing oldest entry:`0x0014`)
-Cache content after this access::  **`0x0011`**, `0x0022`, `0x0043`, `0x0012`. 
+Cache content after this access:  **`0x0011`**, `0x0022`, `0x0043`, `0x0012`. 
 
 `At t=24: 0x0014`$$\rightarrow$$  `MISS`  (and cached by replacing oldest entry:`0x0011`)
 Cache content after this access:  **`0x0022`**, `0x0043`, `0x0012`, `0x0014`. 

@@ -162,7 +162,7 @@ In a fully working Beta CPU, we should observe that constant `8` is stored in Me
 * If `RA2SEL` MUX selects input `0` during this instruction, it will take the content of register `11111` (`R31`) to be stored at `Mem[answer]`
 * Therefore we will observe `0` at `Mem[answer]` instead of `8`
 
-Now consider the following program **P2** to be run at exactly 3 clk cycle (or until `HALT()`, whichever comes earlier):: 
+Now consider the following program **P2** to be run at exactly 3 clk cycle (or until `HALT()`, whichever comes earlier):
 
 ```cpp
 .=0x0000  
