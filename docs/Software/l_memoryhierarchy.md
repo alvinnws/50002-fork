@@ -335,7 +335,7 @@ For $$\beta$$ CPU, we have 32 bits of `TAG` and 32 bits of `DATA`.  Note the pre
 
 1.  **Expensive,** made up of SRAMS for both `TAG` and `Data` (content) field (i.e: 64 bits in total for $$\beta$$) and lots of other hardware: 	
 	* Bitwise comparator at each *cache line* (i.e: an "entry": `TAG`-`Content`, illustrated as a *row* in the figure above). 
-	* Tristate buffer required at each cache line (row)
+	* Tristate buffer required at each cache line
 	* Large `OR` gate to compute `HIT`
 2.  **Very fast**, it does **parallel** lookup when given an incoming address:
 	* Comparison between incoming address and all `TAG` in each cache line  happens **simultaneously**.
@@ -358,7 +358,7 @@ Characteristics of DM cache (in [comparison](https://www.youtube.com/watch?v=m5_
 1. **Cheaper:** less SRAM is used as the `TAG` field **contains only the T-upper bits** of address `A`. 
 	* Also less of other hardwares: only 1 bit-wise comparator (to compare T-bits) needed. 
 	* But we need *K-bits selector* Decoder to address each cache line and activate its word line. 
-2. **Not that flexible:** A unique combination of K-bits of `A` is **mapped** to **exactly one** of the entries / row of DM cache. Each cache line in DM cache is addressable by the lower `K`-bits of the address. The lower K-bits of `A` decides which cache line (row) of DM cache we are looking for. 
+2. **Not that flexible:** A unique combination of K-bits of `A` is **mapped** to **exactly one** of the entries / row of DM cache. Each cache line in DM cache is addressable by the lower `K`-bits of the address. The lower K-bits of `A` decides which cache line of DM cache we are looking for. 
 	* The number of entries in the DM cache is depends on the value of `K`. 
 	* The DM cache is able to store up to $$2^K$$ `TAG`-`Content` entries. 
    * The `Content` field contains a copy of all bits of data at `Mem[A]`. 
