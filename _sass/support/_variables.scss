@@ -240,3 +240,56 @@ $media-queries: (
   lg: $content-width + $nav-width,
   xl: 1400px,
 ) !default;
+
+
+// ── Calendar week cards ──
+.week-card {
+    background: $grey-lt-000;
+    border: 1px solid $grey-lt-300;
+    border-left: 3px solid $link-color;
+    border-radius: $border-radius;
+    padding: 12px 16px;
+    margin: 12px 0;
+}
+.week-card .wr {
+    display: flex;
+    gap: 8px;
+    padding: 3px 0;
+    font-size: 0.92em;
+    line-height: 1.5;
+    flex-wrap: wrap;
+}
+.week-card .wl {
+    min-width: 80px;
+    font-weight: 600;
+    color: $grey-dk-100;
+    flex-shrink: 0;
+}
+
+// ── Calendar badges ──
+.badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: $border-radius;
+    font-size: 0.85em;
+    font-weight: 600;
+    margin-right: 4px;
+}
+.badge-exam { background: $calloutsred-000;    color: $calloutsred-300; }
+.badge-quiz { background: $calloutsyellow-000; color: darken($calloutsyellow-300, 10%); }
+.badge-lab  { background: $calloutsteal-000;   color: white; }
+.badge-pa   { background: $calloutsblue-000;   color: white; }
+.badge-ext  { background: $calloutsgreen-000;  color: white; }
+.badge-off  { background: $grey-lt-100;        color: $grey-dk-100; }
+.badge-prep { background: $calloutspink-000;   color: $calloutspink-300; }
+
+// ── Calendar link visibility ──
+.week-card a,
+table a {
+    color: $link-color;
+    text-decoration: underline;
+    text-decoration-color: rgba($link-color, 0.3);
+    &:hover {
+        text-decoration-color: $link-color;
+    }
+}
