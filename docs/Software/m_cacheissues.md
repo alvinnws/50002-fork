@@ -298,7 +298,6 @@ This method is **especially** useful <span class="orange-bold">if</span> there's
 {:.highlight}
 If we have a DM cache with $N$ cache lines and block size of 4: how many `TAG`, `k`, and `b` bits are there? 
 
-
 The number of **data** **words** stored in each cache line is called the **block size** and is always a power of two. Recall that `1 word = 32 bits` for the $$\beta$$ CPU, and we address the entire word by its *smallest* byte address, e.g: word address 0 is comprised of data at address 0 to 3.  
 
 Hence to index or address each word in the cache block of `B` words, we need $$b = \log_2(B)$$ bits. In the example above, we need 2 bits to address each **column**, taken from `A[3:2]` (assuming that `A` uses byte addressing). 
@@ -318,10 +317,11 @@ However, older hardware-oriented texts distinguish them as follows: a cache line
 
 In this course, we shall follow the **modern** convention wherever possible. We will make it very clear in exams as well by stating the total cache's capacity (in words) too. 
 
-In summary, if we have block size of 8 for example:
-1. In a DM cache, a cache line refers to a *row* with 8 data words (content), all sharing the same `TAG`.
+In summary, if we have block size of 8 for example with word addressing:
+1. In a DM cache, a cache line refers to a *row* with 8 data words (content), all sharing the same `TAG` (figure below)
 2. In a NWSA cache, a cache line means the same thing, but for a single *way* (a single DM cache with that 8 data words of content). Multiple cache lines sharing the same index is called a *set*.
 
+<img src="{{ site.baseurl }}/docs/Software/images/cs-2026-50002-dm-cache-block.drawio.png"  class="center_seventy no-invert"/>
 
 ### Tradeoffs
 There are tradeoffs in determining the block size of our cache, since we always fetch (and / or overwrite) `B` words -- *the entire block* -- together at a time. For instance, with a block size of 4, a missed access to address 0 will cause data word at address 0, 4,  8, and 12 to be fetched altogether from memory. Another example: a missed access to address 20 will cause data word at address 16, 20, 24, and 28 to be fetched altogether as well. 
