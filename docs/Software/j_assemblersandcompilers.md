@@ -196,6 +196,11 @@ j : LONG(5)
 
 This causes the `BEQ` to branch to *this* current address (recall "dot" means "here", this byte's address) - 12, which is  `12 (BEQ's address) - 12 = 0`, resulting in address 0 as the branch destination. It is equivalent to `BEQ(R31, 0x0, R31)`.
 
+{:.note-title}
+> LONG(x)
+>
+> This is a macro (shorthand) to convert x into 32-bit word. See [this](#assembler-macroinstructions) section.
+
 **To populate memory content**:
 
 ```nasm
