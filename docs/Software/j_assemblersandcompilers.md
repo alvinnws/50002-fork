@@ -160,6 +160,85 @@ The `.` is a **special symbol** which dictates where *next* byte address to be f
 ADDC(R0, 3, R1) | means to put (load) this instruction at address 0x100
 ```
 
+It can be used in these contexts:
+
+**As regular instruction loading address:**
+```nasm
+.include beta.uasm
+
+. = 0x000
+ADDC(R1,3,R1) | address 0
+SUBC(R1,10,R2) | address 4
+ST(R1, j, R31) | address 8
+BEQ(R31, end, R31) | address 12
+j: LONG(5)
+
+
+. = 0x100
+end: BEQ(R31, 0, R1) | address 20
+```
+
+The above writes `BEQ(R31, 0, R1)` at address `0x100`.
+
+**As label replacement**:
+```nasm
+.include beta.uasm
+
+. = 0x000
+
+ADDC(R1,3,R1) | address 0
+SUBC(R1,10,R2) | address 4
+ST(R1, j, R31) | address 8
+BEQ(R31, . - 12, R31) | address 12
+
+j : LONG(5)
+```
+
+This causes the `BEQ` to branch to *this* current address (recall "dot" means "here", this byte's address) - 12, which is  `12 (BEQ's address) - 12 = 0`, resulting in address 0 as the branch destination. It is equivalent to `BEQ(R31, 0x0, R31)`.
+
+**To populate memory content**:
+
+```nasm
+.include beta.uasm
+
+. = 0x000
+
+ADDC(R1,3,R1) | address 0
+SUBC(R1,10,R2) | address 4
+ST(R1, j, R31) | address 8
+BEQ(R31, . - 12, R31) | address 12
+
+j : LONG(5) | address 16
+y : . | address 20
+```
+
+The content of `Mem[16]` is word (32-bits) `0x00000005`, and the content of `Mem[20]` is byte `0x14`.
+
+If we do another one:
+
+```nasm
+.include beta.uasm
+
+. = 0x000
+
+ADDC(R1,3,R1) | address 0
+SUBC(R1,10,R2) | address 4
+ST(R1, j, R31) | address 8
+BEQ(R31, . - 12, R31) | address 12
+
+j : LONG(5) | address 16
+y : . | address 20
+x : . | address 21
+```
+
+We would have `Mem[21]` as byte `0x15` (which is 21). That means we are simply filling the content of address 20 and 21 as the address value itself in bytes. 
+
+{:.note}
+If it is still confusing, compile it in bsim.
+
+<img src="{{ site.baseurl }}//docs/Software/images/j_assemblersandcompilers/2026-04-27-14-26-25.png"  class="center_seventy no-invert"/>
+
+
 ### Labels
 Labels are symbols that represent memory addresses. It is defined using the `:`. For instance, `begin_loop` is a label. 
   
@@ -185,6 +264,10 @@ We augment the basic Beta instruction set with the following macros, making it e
 
 {: .note}
 We will use these extended macroinstructions in exam and problem sets. 
+
+### `HALT()`
+
+This is a special instruction that simply cause the Beta CPU simulator to stop execution. You can treat this as a stop instruction.
 
 ## [Interpreter vs Compiler](https://www.youtube.com/watch?v=Hhq3RhZcngQ&t=1487s)
 Some higher level languages, like Java and C/C++ have to be compiled first using its respective **compilers** (`javac` for Java or `GCC` for C/C++), resulting in an **executable** (a sequence of binary instructions directly understandable by the CPU). 
