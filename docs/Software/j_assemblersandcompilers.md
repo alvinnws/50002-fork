@@ -175,7 +175,7 @@ j: LONG(5)
 
 
 . = 0x100
-end: BEQ(R31, 0, R1) | address 20
+end: BEQ(R31, 0, R1) | address 256
 ```
 
 The above writes `BEQ(R31, 0, R1)` at address `0x100`.
