@@ -4,6 +4,7 @@ permalink: /fpga/lucid-v1/debugging
 title: Debugging for the Frantic
 description: Getting familiar with Alchitry Lab's debug feature
 nav_order:  6
+nav_exclude: true
 ---
 
 
